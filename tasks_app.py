@@ -132,6 +132,7 @@ class TaskApp(tk.Tk):
 
         self.task_listbox = tk.Listbox(self, selectmode=tk.SINGLE)
         self.task_listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
         button_frame = ttk.Frame(self)
         button_frame.pack(fill=tk.X, padx=10)
 
