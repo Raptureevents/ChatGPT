@@ -7,6 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 async function init() {
   await query(`CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -77,6 +78,7 @@ app.post('/api/tasks', async (req, res) => {
   res.status(201).end();
 });
 
+
 app.get('/api/projects', async (req, res) => {
   const { userId } = req.query;
   const rows = await query('SELECT * FROM projects WHERE user_id=$1', [userId]);
@@ -112,5 +114,6 @@ app.post('/api/expenses', async (req, res) => {
   await query('INSERT INTO expenses (user_id, name) VALUES ($1, $2)', [userId, name]);
   res.status(201).end();
 });
+
 
 app.listen(3001, () => console.log('Server running on port 3001'));

@@ -1,5 +1,6 @@
 # ChatGPT
 
+
 This repository contains two versions of a task manager.
 
 * `tasks_app.py` – a Python/Tkinter implementation that falls back to a CLI when no display is available.
@@ -9,9 +10,11 @@ This repository contains two versions of a task manager.
 
 Ensure you have Python installed (version 3.8+ recommended). Tkinter is typically included with standard Python installations. Run the application with:
 
+
 ```bash
 python tasks_app.py
 ```
+
 
 User accounts and tasks are stored in the SQLite database `app.db` in the project directory. If no GUI display is detected, the script automatically runs in console mode.
 
