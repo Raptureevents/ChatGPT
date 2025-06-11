@@ -76,6 +76,57 @@ class TaskApp(tk.Tk):
                 desc += ' [DONE]'
             self.task_listbox.insert(tk.END, desc)
 
+def print_tasks(tasks):
+    if not tasks:
+        print("No tasks available.")
+    for i, task in enumerate(tasks, 1):
+        status = "[DONE]" if task.get('done') else ""
+        print(f"{i}. {task['description']} {status}")
+
+
+def run_cli():
+    tasks = load_tasks()
+    while True:
+        print("\nCurrent tasks:")
+        print_tasks(tasks)
+        cmd = input("\nCommand (add/remove/done/quit): ").strip().lower()
+        if cmd == 'add':
+            desc = input("Task description: ").strip()
+            if desc:
+                tasks.append({'description': desc, 'done': False})
+                save_tasks(tasks)
+        elif cmd.startswith('remove'):
+            parts = cmd.split()
+            if len(parts) == 2 and parts[1].isdigit():
+                idx = int(parts[1]) - 1
+                if 0 <= idx < len(tasks):
+                    tasks.pop(idx)
+                    save_tasks(tasks)
+                else:
+                    print("Invalid index")
+            else:
+                print("Usage: remove <task number>")
+        elif cmd.startswith('done'):
+            parts = cmd.split()
+            if len(parts) == 2 and parts[1].isdigit():
+                idx = int(parts[1]) - 1
+                if 0 <= idx < len(tasks):
+                    tasks[idx]['done'] = True
+                    save_tasks(tasks)
+                else:
+                    print("Invalid index")
+            else:
+                print("Usage: done <task number>")
+        elif cmd == 'quit':
+            break
+        else:
+            print("Unknown command")
+
+
 if __name__ == '__main__':
-    app = TaskApp()
-    app.mainloop()
+    if os.environ.get('DISPLAY'):
+        app = TaskApp()
+        app.mainloop()
+    else:
+        print("No display found. Running in console mode.")
+        run_cli()
