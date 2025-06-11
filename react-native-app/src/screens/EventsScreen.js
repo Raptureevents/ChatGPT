@@ -20,7 +20,6 @@ export default function EventsScreen({ route }) {
     loadEvents();
   };
 
-
   const deleteEvent = async (item) => {
     await axios.delete(`http://localhost:3001/api/events/${item.id}`);
     loadEvents();

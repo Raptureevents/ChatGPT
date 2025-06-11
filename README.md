@@ -23,6 +23,5 @@ User accounts and tasks are stored in the SQLite database `app.db` in the projec
 3. From `react-native-app/` run `npm install` and `npm start` to launch the React Native bundler.
 
 
-The React Native app now features a dashboard with sections for tasks, projects, events and expenses. Reusable components keep the interface minimalistic. The Express backend exposes CRUD endpoints for all resources and provides a `/api/stream` Server-Sent Events endpoint so the client can refresh lists when data changes.
-
+The React Native app now features a role-based dashboard with sections for tasks, projects, events, expenses and notifications. Users log in as either `user`, `admin` or `master`. Regular users can manage only their own tasks, while admins assign tasks to users in their department and masters can assign to anyone. Tasks support comments and approval flags. A `/api/stream` Server-Sent Events endpoint allows the client to refresh lists and notification logs in real time.
 

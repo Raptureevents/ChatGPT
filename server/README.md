@@ -12,8 +12,5 @@ npm install
 npm start
 ```
 
-
 The server exposes endpoints under `/api` for login, tasks, projects, events and expenses. Each resource supports create, update and delete operations. A `/api/stream` endpoint delivers real-time notifications via Server-Sent Events.
-
-
 

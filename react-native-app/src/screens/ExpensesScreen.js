@@ -20,7 +20,6 @@ export default function ExpensesScreen({ route }) {
     loadExpenses();
   };
 
-
   const deleteExpense = async (item) => {
     await axios.delete(`http://localhost:3001/api/expenses/${item.id}`);
     loadExpenses();
@@ -43,9 +42,7 @@ export default function ExpensesScreen({ route }) {
       <Button onPress={addExpense} mode="contained" style={{ marginTop: 10 }}>
         Add
       </Button>
-
       <ItemList items={expenses} onLongPressItem={deleteExpense} />
-
     </View>
   );
 }

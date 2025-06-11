@@ -11,17 +11,17 @@ function broadcast(update) {
   clients.forEach((res) => res.write(data));
 }
 
-
 const app = express();
 app.use(cors());
 app.use(express.json());
-
 
 async function init() {
   await query(`CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
-    password TEXT
+    password TEXT,
+    role TEXT DEFAULT 'user',
+    department TEXT
   )`);
 
   await query(`CREATE TABLE IF NOT EXISTS tasks (
@@ -29,9 +29,21 @@ async function init() {
     user_id INTEGER,
     description TEXT,
     assignee_id INTEGER,
+
+    comments TEXT,
+    reviewed BOOLEAN DEFAULT FALSE,
+    approved BOOLEAN DEFAULT FALSE,
+    done BOOLEAN DEFAULT FALSE,
     FOREIGN KEY(user_id) REFERENCES users(id)
   )`);
 
+  await query(`CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
+  
   await query(`CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
     user_id INTEGER,
@@ -67,10 +79,11 @@ app.get('/api/stream', (req, res) => {
 
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  const rows = await query('SELECT id, password FROM users WHERE username=$1', [username]);
+  const rows = await query('SELECT id, password, role FROM users WHERE username=$1', [username]);
   const user = rows[0];
   if (user && await bcrypt.compare(password, user.password)) {
-    res.json({ userId: user.id });
+    res.json({ userId: user.id, role: user.role });
+
   } else {
     res.status(401).json({ error: 'Invalid credentials' });
   }
@@ -80,7 +93,8 @@ app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
   try {
-    await query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashed]);
+    await query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [username, hashed, 'user']);
+
     res.status(201).end();
   } catch (err) {
     res.status(400).json({ error: 'User exists' });
@@ -88,24 +102,37 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.get('/api/tasks', async (req, res) => {
-  const { userId } = req.query;
-  const tasks = await query('SELECT * FROM tasks WHERE user_id=$1', [userId]);
+
+  const { assigneeId } = req.query;
+  const tasks = await query('SELECT * FROM tasks WHERE assignee_id=$1', [assigneeId]);
+
   res.json(tasks);
 });
 
 app.post('/api/tasks', async (req, res) => {
-  const { userId, description, assigneeId } = req.body;
-  await query('INSERT INTO tasks (user_id, description, assignee_id) VALUES ($1, $2, $3)', [userId, description, assigneeId]);
-
+  const { userId, description, assigneeId, comments } = req.body;
+  await query('INSERT INTO tasks (user_id, description, assignee_id, comments) VALUES ($1, $2, $3, $4)', [userId, description, assigneeId, comments]);
+  await query('INSERT INTO notifications (user_id, message) VALUES ($1, $2)', [assigneeId, 'New task assigned']);
   broadcast({ type: 'tasks' });
+  broadcast({ type: 'notifications' });
+
   res.status(201).end();
 });
 
 app.put('/api/tasks/:id', async (req, res) => {
-  const { description, assigneeId, done } = req.body;
-  await query('UPDATE tasks SET description=$1, assignee_id=$2, done=$3 WHERE id=$4', [description, assigneeId, done, req.params.id]);
+
+  const { description, assigneeId, comments, reviewed, approved, done } = req.body;
+  await query('UPDATE tasks SET description=$1, assignee_id=$2, comments=$3, reviewed=$4, approved=$5, done=$6 WHERE id=$7', [description, assigneeId, comments, reviewed, approved, done, req.params.id]);
+  await query('INSERT INTO notifications (user_id, message) VALUES ($1, $2)', [assigneeId, 'Task updated']);
   broadcast({ type: 'tasks' });
+  broadcast({ type: 'notifications' });
   res.end();
+});
+
+app.get('/api/notifications', async (req, res) => {
+  const { userId } = req.query;
+  const rows = await query('SELECT * FROM notifications WHERE user_id=$1 ORDER BY id DESC', [userId]);
+  res.json(rows);
 });
 
 app.delete('/api/tasks/:id', async (req, res) => {
@@ -113,7 +140,6 @@ app.delete('/api/tasks/:id', async (req, res) => {
   broadcast({ type: 'tasks' });
   res.end();
 });
-
 
 app.get('/api/projects', async (req, res) => {
   const { userId } = req.query;

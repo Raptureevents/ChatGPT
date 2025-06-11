@@ -5,7 +5,6 @@ import { List } from 'react-native-paper';
 
 export default function ItemList({ items, onPressItem, onLongPressItem }) {
 
-
   return (
     <FlatList
       data={items}
