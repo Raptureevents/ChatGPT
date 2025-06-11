@@ -13,5 +13,6 @@
     "@react-navigation/native": "6.1.7",
     "@react-navigation/native-stack": "6.9.12",
     "react-native-chart-kit": "6.12.0"
+
   }
 }

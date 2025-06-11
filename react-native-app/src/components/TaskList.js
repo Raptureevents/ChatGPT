@@ -13,4 +13,5 @@ export default function TaskList({ tasks, onToggle, onDelete }) {
       onLongPressItem={onDelete}
     />
   );
+
 }

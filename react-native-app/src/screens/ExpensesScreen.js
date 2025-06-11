@@ -33,6 +33,7 @@ export default function ExpensesScreen({ route }) {
       if (data.type === 'expenses') loadExpenses();
     };
     return () => es.close();
+
   }, []);
 
   return (

@@ -33,6 +33,7 @@ export default function EventsScreen({ route }) {
       if (data.type === 'events') loadEvents();
     };
     return () => es.close();
+
   }, []);
 
   return (
@@ -42,6 +43,7 @@ export default function EventsScreen({ route }) {
         Add
       </Button>
       <ItemList items={events} onLongPressItem={deleteEvent} />
+
     </View>
   );
 }

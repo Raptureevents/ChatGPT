@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { View, Dimensions, ScrollView } from 'react-native';
 import { Button, Surface } from 'react-native-paper';
@@ -36,6 +37,7 @@ export default function DashboardScreen({ navigation, route }) {
           }}
         />
       </Surface>
+
       <Button mode="contained" onPress={() => navigation.navigate('Tasks', { userId, role })} style={{ marginBottom: 10 }}>
         Tasks
       </Button>
@@ -55,6 +57,8 @@ export default function DashboardScreen({ navigation, route }) {
       <Button mode="contained" onPress={() => navigation.navigate('Notifications', { userId })}>
         Notifications
       </Button>
+
     </ScrollView>
+
   );
 }

@@ -33,6 +33,7 @@ export default function ProjectsScreen({ route }) {
       if (data.type === 'projects') loadProjects();
     };
     return () => es.close();
+
   }, []);
 
   return (
@@ -42,6 +43,7 @@ export default function ProjectsScreen({ route }) {
         Add
       </Button>
       <ItemList items={projects} onLongPressItem={deleteProject} />
+
     </View>
   );
 }

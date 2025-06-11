@@ -6,7 +6,9 @@ import hashlib
 from pathlib import Path
 from tkinter import ttk
 
+
 PRIMARY_COLOR = "#6200ee"
+
 
 # Database file lives in the same directory as this script
 DB_FILE = str(Path(__file__).with_name('app.db'))
@@ -89,10 +91,12 @@ class LoginWindow(tk.Tk):
         super().__init__()
         self.title("Login")
         self.geometry("300x150")
+
         style = ttk.Style(self)
         style.theme_use('clam')
         style.configure('TButton', background=PRIMARY_COLOR, foreground='white')
         style.map('TButton', background=[('active', PRIMARY_COLOR)])
+
 
         ttk.Label(self, text="Username:").pack(pady=(10, 0))
         self.username_var = tk.StringVar()
@@ -132,10 +136,12 @@ class TaskApp(tk.Tk):
         super().__init__()
         self.title(f'Tasks - {username}')
         self.geometry('300x400')
+
         style = ttk.Style(self)
         style.theme_use('clam')
         style.configure('TButton', background=PRIMARY_COLOR, foreground='white')
         style.map('TButton', background=[('active', PRIMARY_COLOR)])
+
 
         self.user_id = user_id
         self.tasks = load_tasks(user_id)

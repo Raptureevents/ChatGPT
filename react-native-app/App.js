@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider, MD3LightTheme as DefaultTheme } from 'react-native-paper';
+
 import LoginScreen from './src/screens/LoginScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
 import TaskScreen from './src/screens/TaskScreen';
@@ -9,6 +10,7 @@ import ProjectsScreen from './src/screens/ProjectsScreen';
 import EventsScreen from './src/screens/EventsScreen';
 import ExpensesScreen from './src/screens/ExpensesScreen';
 import NotificationsScreen from './src/screens/NotificationsScreen';
+
 
 const Stack = createNativeStackNavigator();
 const theme = {
@@ -35,5 +37,6 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
+
   );
 }

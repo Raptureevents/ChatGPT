@@ -81,6 +81,7 @@ app.post('/api/login', async (req, res) => {
   const user = rows[0];
   if (user && await bcrypt.compare(password, user.password)) {
     res.json({ userId: user.id, role: user.role });
+
   } else {
     res.status(401).json({ error: 'Invalid credentials' });
   }
@@ -98,8 +99,10 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.get('/api/tasks', async (req, res) => {
+
   const { assigneeId } = req.query;
   const tasks = await query('SELECT * FROM tasks WHERE assignee_id=$1', [assigneeId]);
+
   res.json(tasks);
 });
 
@@ -109,6 +112,7 @@ app.post('/api/tasks', async (req, res) => {
   await query('INSERT INTO notifications (user_id, message) VALUES ($1, $2)', [assigneeId, 'New task assigned']);
   broadcast({ type: 'tasks' });
   broadcast({ type: 'notifications' });
+
   res.status(201).end();
 });
 
@@ -159,6 +163,7 @@ app.delete('/api/projects/:id', async (req, res) => {
   res.end();
 });
 
+
 app.get('/api/events', async (req, res) => {
   const { userId } = req.query;
   const rows = await query('SELECT * FROM events WHERE user_id=$1', [userId]);
@@ -168,6 +173,7 @@ app.get('/api/events', async (req, res) => {
 app.post('/api/events', async (req, res) => {
   const { userId, name } = req.body;
   await query('INSERT INTO events (user_id, name) VALUES ($1, $2)', [userId, name]);
+
   broadcast({ type: 'events' });
   res.status(201).end();
 });
@@ -185,6 +191,7 @@ app.delete('/api/events/:id', async (req, res) => {
   res.end();
 });
 
+
 app.get('/api/expenses', async (req, res) => {
   const { userId } = req.query;
   const rows = await query('SELECT * FROM expenses WHERE user_id=$1', [userId]);
@@ -194,6 +201,7 @@ app.get('/api/expenses', async (req, res) => {
 app.post('/api/expenses', async (req, res) => {
   const { userId, name } = req.body;
   await query('INSERT INTO expenses (user_id, name) VALUES ($1, $2)', [userId, name]);
+
   broadcast({ type: 'expenses' });
   res.status(201).end();
 });
@@ -210,5 +218,6 @@ app.delete('/api/expenses/:id', async (req, res) => {
   broadcast({ type: 'expenses' });
   res.end();
 });
+
 
 app.listen(3001, () => console.log('Server running on port 3001'));
