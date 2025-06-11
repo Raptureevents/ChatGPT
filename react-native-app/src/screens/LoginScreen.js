@@ -13,6 +13,7 @@ export default function LoginScreen({ navigation }) {
       const res = await axios.post('http://localhost:3001/api/login', { username, password });
       navigation.replace('Dashboard', { userId: res.data.userId });
 
+
     } catch (e) {
       setError('Login failed');
     }

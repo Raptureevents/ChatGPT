@@ -20,8 +20,30 @@ export default function TaskScreen({ route }) {
     loadTasks();
   };
 
+
+  const toggleTask = async (task) => {
+    await axios.put(`http://localhost:3001/api/tasks/${task.id}`, {
+      description: task.description,
+      assigneeId: task.assignee_id,
+      done: !task.done,
+    });
+    loadTasks();
+  };
+
+  const deleteTask = async (task) => {
+    await axios.delete(`http://localhost:3001/api/tasks/${task.id}`);
+    loadTasks();
+  };
+
   useEffect(() => {
     loadTasks();
+    const es = new EventSource('http://localhost:3001/api/stream');
+    es.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'tasks') loadTasks();
+    };
+    return () => es.close();
+
   }, []);
 
   return (
@@ -30,7 +52,9 @@ export default function TaskScreen({ route }) {
       <Button onPress={addTask} mode="contained" style={{ marginTop: 10 }}>
         Add
       </Button>
-      <TaskList tasks={tasks} />
+
+      <TaskList tasks={tasks} onToggle={toggleTask} onDelete={deleteTask} />
+
     </View>
   );
 }

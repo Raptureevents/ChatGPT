@@ -2,13 +2,11 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './src/screens/LoginScreen';
-
 import DashboardScreen from './src/screens/DashboardScreen';
 import TaskScreen from './src/screens/TaskScreen';
 import ProjectsScreen from './src/screens/ProjectsScreen';
 import EventsScreen from './src/screens/EventsScreen';
 import ExpensesScreen from './src/screens/ExpensesScreen';
-
 
 const Stack = createNativeStackNavigator();
 

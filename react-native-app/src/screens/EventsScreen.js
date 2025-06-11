@@ -20,8 +20,21 @@ export default function EventsScreen({ route }) {
     loadEvents();
   };
 
+
+  const deleteEvent = async (item) => {
+    await axios.delete(`http://localhost:3001/api/events/${item.id}`);
+    loadEvents();
+  };
+
   useEffect(() => {
     loadEvents();
+    const es = new EventSource('http://localhost:3001/api/stream');
+    es.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'events') loadEvents();
+    };
+    return () => es.close();
+
   }, []);
 
   return (
@@ -30,7 +43,8 @@ export default function EventsScreen({ route }) {
       <Button onPress={addEvent} mode="contained" style={{ marginTop: 10 }}>
         Add
       </Button>
-      <ItemList items={events} />
+      <ItemList items={events} onLongPressItem={deleteEvent} />
+
     </View>
   );
 }

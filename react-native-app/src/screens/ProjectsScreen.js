@@ -20,8 +20,21 @@ export default function ProjectsScreen({ route }) {
     loadProjects();
   };
 
+
+  const deleteProject = async (item) => {
+    await axios.delete(`http://localhost:3001/api/projects/${item.id}`);
+    loadProjects();
+  };
+
   useEffect(() => {
     loadProjects();
+    const es = new EventSource('http://localhost:3001/api/stream');
+    es.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'projects') loadProjects();
+    };
+    return () => es.close();
+
   }, []);
 
   return (
@@ -30,7 +43,9 @@ export default function ProjectsScreen({ route }) {
       <Button onPress={addProject} mode="contained" style={{ marginTop: 10 }}>
         Add
       </Button>
-      <ItemList items={projects} />
+
+      <ItemList items={projects} onLongPressItem={deleteProject} />
+
     </View>
   );
 }
