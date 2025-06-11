@@ -154,7 +154,6 @@ class TaskApp(tk.Tk):
             self.tasks = load_tasks(self.user_id)
             self.refresh_tasks()
 
-
     def remove_task(self):
         idx = self.task_listbox.curselection()
         if not idx:
