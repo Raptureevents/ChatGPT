@@ -10,7 +10,7 @@ This repository contains two versions of a task manager.
 Ensure you have Python installed (version 3.8+ recommended). Tkinter is typically included with standard Python installations. Run the application with:
 
 
-```bash
+The React Native app now features a role-based dashboard with sections for tasks, projects, events, expenses and notifications. Users log in as either `user`, `admin` or `master`. Regular users can manage only their own tasks, while admins assign tasks to users in their department and masters can assign to anyone. Tasks support comments and approval flags. A `/api/stream` Server-Sent Events endpoint allows the client to refresh lists and notification logs in real time.
 python tasks_app.py
 ```
 

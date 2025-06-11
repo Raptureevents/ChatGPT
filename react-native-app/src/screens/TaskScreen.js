@@ -5,22 +5,37 @@ import TaskList from '../components/TaskList';
 import axios from 'axios';
 
 export default function TaskScreen({ route }) {
-  const { userId } = route.params;
+  const { userId, role } = route.params;
   const [tasks, setTasks] = useState([]);
   const [desc, setDesc] = useState('');
 
+  const [assignee, setAssignee] = useState('');
+  const [comment, setComment] = useState('');
+
   const loadTasks = async () => {
-    const res = await axios.get('http://localhost:3001/api/tasks', { params: { userId } });
+    const res = await axios.get('http://localhost:3001/api/tasks', { params: { assigneeId: userId } });
     setTasks(res.data);
   };
 
   const addTask = async () => {
-    await axios.post('http://localhost:3001/api/tasks', { userId, description: desc });
+    const body = { userId, description: desc, assigneeId: role === 'user' ? userId : Number(assignee) || userId, comments: role === 'user' ? '' : comment };
+    await axios.post('http://localhost:3001/api/tasks', body);
     setDesc('');
+    setAssignee('');
+    setComment('');
     loadTasks();
   };
 
+      comments: task.comments,
+      reviewed: task.reviewed,
+      approved: task.approved,
 
+      {role !== 'user' && (
+        <>
+          <TextInput label="Assign to user id" value={assignee} onChangeText={setAssignee} style={{ marginTop: 10 }} />
+          <TextInput label="Comment" value={comment} onChangeText={setComment} style={{ marginTop: 10 }} />
+        </>
+      )}
   const toggleTask = async (task) => {
     await axios.put(`http://localhost:3001/api/tasks/${task.id}`, {
       description: task.description,

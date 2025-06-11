@@ -4,18 +4,41 @@ import bcrypt from 'bcrypt';
 import { query } from './db.js';
 
 
-const clients = [];
+    password TEXT,
+    role TEXT DEFAULT 'user',
+    department TEXT
 
-function broadcast(update) {
-  const data = `data: ${JSON.stringify(update)}\n\n`;
-  clients.forEach((res) => res.write(data));
-}
+    comments TEXT,
+    reviewed BOOLEAN DEFAULT FALSE,
+    approved BOOLEAN DEFAULT FALSE,
+    done BOOLEAN DEFAULT FALSE,
+  await query(`CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
 
+  const rows = await query('SELECT id, password, role FROM users WHERE username=$1', [username]);
+    res.json({ userId: user.id, role: user.role });
+    await query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [username, hashed, 'user']);
+  const { assigneeId } = req.query;
+  const tasks = await query('SELECT * FROM tasks WHERE assignee_id=$1', [assigneeId]);
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+  const { userId, description, assigneeId, comments } = req.body;
+  await query('INSERT INTO tasks (user_id, description, assignee_id, comments) VALUES ($1, $2, $3, $4)', [userId, description, assigneeId, comments]);
+  await query('INSERT INTO notifications (user_id, message) VALUES ($1, $2)', [assigneeId, 'New task assigned']);
+  broadcast({ type: 'notifications' });
+  const { description, assigneeId, comments, reviewed, approved, done } = req.body;
+  await query('UPDATE tasks SET description=$1, assignee_id=$2, comments=$3, reviewed=$4, approved=$5, done=$6 WHERE id=$7', [description, assigneeId, comments, reviewed, approved, done, req.params.id]);
+  await query('INSERT INTO notifications (user_id, message) VALUES ($1, $2)', [assigneeId, 'Task updated']);
+  broadcast({ type: 'notifications' });
 
+app.get('/api/notifications', async (req, res) => {
+  const { userId } = req.query;
+  const rows = await query('SELECT * FROM notifications WHERE user_id=$1 ORDER BY id DESC', [userId]);
+  res.json(rows);
+});
 
 async function init() {
   await query(`CREATE TABLE IF NOT EXISTS users (
