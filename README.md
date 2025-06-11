@@ -25,3 +25,13 @@ User accounts and tasks are stored in the SQLite database `app.db` in the projec
 
 The React Native app now features a role-based dashboard with sections for tasks, projects, events, expenses and notifications. Users log in as either `user`, `admin` or `master`. Regular users can manage only their own tasks, while admins assign tasks to users in their department and masters can assign to anyone. Tasks support comments and approval flags. A `/api/stream` Server-Sent Events endpoint allows the client to refresh lists and notification logs in real time.
 
+### Building the Windows Client
+
+For a production-ready desktop build, ensure you have the Windows development dependencies installed (Visual Studio with the UWP workload). Then run:
+
+```bash
+npx react-native run-windows --release
+```
+
+This produces a signed executable under `react-native-app/windows`. For the Node server, set `NODE_ENV=production` and use a process manager such as `pm2` to run `server/server.js`.
+

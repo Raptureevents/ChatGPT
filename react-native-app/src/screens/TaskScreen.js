@@ -5,7 +5,6 @@ import TaskList from '../components/TaskList';
 import axios from 'axios';
 
 export default function TaskScreen({ route }) {
-
   const { userId, role } = route.params;
   const [tasks, setTasks] = useState([]);
   const [desc, setDesc] = useState('');

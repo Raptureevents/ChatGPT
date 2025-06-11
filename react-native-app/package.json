@@ -11,6 +11,8 @@
     "react-native-paper": "5.10.0",
     "axios": "1.6.0",
     "@react-navigation/native": "6.1.7",
-    "@react-navigation/native-stack": "6.9.12"
+    "@react-navigation/native-stack": "6.9.12",
+    "react-native-chart-kit": "6.12.0"
+
   }
 }

@@ -9,7 +9,6 @@ export default function ItemList({ items, onPressItem, onLongPressItem }) {
     <FlatList
       data={items}
       keyExtractor={(item) => item.id.toString()}
-
       renderItem={({ item }) => (
         <List.Item
           title={item.name || item.description}

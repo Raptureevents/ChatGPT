@@ -3,7 +3,6 @@ import cors from 'cors';
 import bcrypt from 'bcrypt';
 import { query } from './db.js';
 
-
 const clients = [];
 
 function broadcast(update) {
@@ -29,7 +28,6 @@ async function init() {
     user_id INTEGER,
     description TEXT,
     assignee_id INTEGER,
-
     comments TEXT,
     reviewed BOOLEAN DEFAULT FALSE,
     approved BOOLEAN DEFAULT FALSE,
@@ -43,7 +41,7 @@ async function init() {
     message TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`);
-  
+
   await query(`CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
     user_id INTEGER,
@@ -94,7 +92,6 @@ app.post('/api/register', async (req, res) => {
   const hashed = await bcrypt.hash(password, 10);
   try {
     await query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [username, hashed, 'user']);
-
     res.status(201).end();
   } catch (err) {
     res.status(400).json({ error: 'User exists' });
@@ -120,7 +117,6 @@ app.post('/api/tasks', async (req, res) => {
 });
 
 app.put('/api/tasks/:id', async (req, res) => {
-
   const { description, assigneeId, comments, reviewed, approved, done } = req.body;
   await query('UPDATE tasks SET description=$1, assignee_id=$2, comments=$3, reviewed=$4, approved=$5, done=$6 WHERE id=$7', [description, assigneeId, comments, reviewed, approved, done, req.params.id]);
   await query('INSERT INTO notifications (user_id, message) VALUES ($1, $2)', [assigneeId, 'Task updated']);
