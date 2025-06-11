@@ -5,6 +5,7 @@ import TaskList from '../components/TaskList';
 import axios from 'axios';
 
 export default function TaskScreen({ route }) {
+
   const { userId, role } = route.params;
   const [tasks, setTasks] = useState([]);
   const [desc, setDesc] = useState('');
@@ -14,10 +15,12 @@ export default function TaskScreen({ route }) {
 
   const loadTasks = async () => {
     const res = await axios.get('http://localhost:3001/api/tasks', { params: { assigneeId: userId } });
+
     setTasks(res.data);
   };
 
   const addTask = async () => {
+
     const body = { userId, description: desc, assigneeId: role === 'user' ? userId : Number(assignee) || userId, comments: role === 'user' ? '' : comment };
     await axios.post('http://localhost:3001/api/tasks', body);
     setDesc('');
@@ -33,6 +36,7 @@ export default function TaskScreen({ route }) {
       comments: task.comments,
       reviewed: task.reviewed,
       approved: task.approved,
+
       done: !task.done,
     });
     loadTasks();
@@ -51,6 +55,7 @@ export default function TaskScreen({ route }) {
       if (data.type === 'tasks') loadTasks();
     };
     return () => es.close();
+
   }, []);
 
   return (
@@ -66,6 +71,7 @@ export default function TaskScreen({ route }) {
         Add
       </Button>
       <TaskList tasks={tasks} onToggle={toggleTask} onDelete={deleteTask} />
+
     </View>
   );
 }

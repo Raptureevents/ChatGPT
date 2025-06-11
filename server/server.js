@@ -3,6 +3,7 @@ import cors from 'cors';
 import bcrypt from 'bcrypt';
 import { query } from './db.js';
 
+
 const clients = [];
 
 function broadcast(update) {
@@ -28,6 +29,7 @@ async function init() {
     user_id INTEGER,
     description TEXT,
     assignee_id INTEGER,
+
     comments TEXT,
     reviewed BOOLEAN DEFAULT FALSE,
     approved BOOLEAN DEFAULT FALSE,
@@ -41,7 +43,7 @@ async function init() {
     message TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`);
-
+  
   await query(`CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
     user_id INTEGER,
@@ -81,6 +83,7 @@ app.post('/api/login', async (req, res) => {
   const user = rows[0];
   if (user && await bcrypt.compare(password, user.password)) {
     res.json({ userId: user.id, role: user.role });
+
   } else {
     res.status(401).json({ error: 'Invalid credentials' });
   }
@@ -91,6 +94,7 @@ app.post('/api/register', async (req, res) => {
   const hashed = await bcrypt.hash(password, 10);
   try {
     await query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [username, hashed, 'user']);
+
     res.status(201).end();
   } catch (err) {
     res.status(400).json({ error: 'User exists' });
@@ -98,8 +102,10 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.get('/api/tasks', async (req, res) => {
+
   const { assigneeId } = req.query;
   const tasks = await query('SELECT * FROM tasks WHERE assignee_id=$1', [assigneeId]);
+
   res.json(tasks);
 });
 
@@ -109,10 +115,12 @@ app.post('/api/tasks', async (req, res) => {
   await query('INSERT INTO notifications (user_id, message) VALUES ($1, $2)', [assigneeId, 'New task assigned']);
   broadcast({ type: 'tasks' });
   broadcast({ type: 'notifications' });
+
   res.status(201).end();
 });
 
 app.put('/api/tasks/:id', async (req, res) => {
+
   const { description, assigneeId, comments, reviewed, approved, done } = req.body;
   await query('UPDATE tasks SET description=$1, assignee_id=$2, comments=$3, reviewed=$4, approved=$5, done=$6 WHERE id=$7', [description, assigneeId, comments, reviewed, approved, done, req.params.id]);
   await query('INSERT INTO notifications (user_id, message) VALUES ($1, $2)', [assigneeId, 'Task updated']);
@@ -159,6 +167,7 @@ app.delete('/api/projects/:id', async (req, res) => {
   res.end();
 });
 
+
 app.get('/api/events', async (req, res) => {
   const { userId } = req.query;
   const rows = await query('SELECT * FROM events WHERE user_id=$1', [userId]);
@@ -168,6 +177,7 @@ app.get('/api/events', async (req, res) => {
 app.post('/api/events', async (req, res) => {
   const { userId, name } = req.body;
   await query('INSERT INTO events (user_id, name) VALUES ($1, $2)', [userId, name]);
+
   broadcast({ type: 'events' });
   res.status(201).end();
 });
@@ -185,6 +195,7 @@ app.delete('/api/events/:id', async (req, res) => {
   res.end();
 });
 
+
 app.get('/api/expenses', async (req, res) => {
   const { userId } = req.query;
   const rows = await query('SELECT * FROM expenses WHERE user_id=$1', [userId]);
@@ -194,6 +205,7 @@ app.get('/api/expenses', async (req, res) => {
 app.post('/api/expenses', async (req, res) => {
   const { userId, name } = req.body;
   await query('INSERT INTO expenses (user_id, name) VALUES ($1, $2)', [userId, name]);
+
   broadcast({ type: 'expenses' });
   res.status(201).end();
 });
@@ -210,5 +222,6 @@ app.delete('/api/expenses/:id', async (req, res) => {
   broadcast({ type: 'expenses' });
   res.end();
 });
+
 
 app.listen(3001, () => console.log('Server running on port 3001'));

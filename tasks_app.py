@@ -246,6 +246,9 @@ if __name__ == '__main__':
     init_db()
     if os.environ.get('DISPLAY'):
         LoginWindow().mainloop()
+
+
+
     else:
         print("No display found. Running in console mode.")
         run_cli()

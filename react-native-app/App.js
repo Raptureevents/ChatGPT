@@ -9,6 +9,7 @@ import EventsScreen from './src/screens/EventsScreen';
 import ExpensesScreen from './src/screens/ExpensesScreen';
 import NotificationsScreen from './src/screens/NotificationsScreen';
 
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
