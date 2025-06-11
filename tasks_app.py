@@ -3,91 +3,83 @@ from tkinter import messagebox, simpledialog
 import os
 import sqlite3
 import hashlib
+from pathlib import Path
 from tkinter import ttk
 
-DB_FILE = 'app.db'
+# Database file lives in the same directory as this script
+DB_FILE = str(Path(__file__).with_name('app.db'))
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
 def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute(
-        """
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
-            password TEXT
+    """Create required tables if they do not exist."""
+    with sqlite3.connect(DB_FILE) as conn:
+        c = conn.cursor()
+        c.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password TEXT
+            )
+            """
         )
-        """
-    )
-    c.execute(
-        """
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            description TEXT,
-            done INTEGER DEFAULT 0,
-            FOREIGN KEY(user_id) REFERENCES users(id)
+        c.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                description TEXT,
+                done INTEGER DEFAULT 0,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+            """
         )
-        """
-    )
-    conn.commit()
-    conn.close()
 
 def load_tasks(user_id):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("SELECT id, description, done FROM tasks WHERE user_id=?", (user_id,))
-    tasks = [
-        {"id": row[0], "description": row[1], "done": bool(row[2])} for row in c.fetchall()
+    """Return a list of task dicts for the given user."""
+    with sqlite3.connect(DB_FILE) as conn:
+        c = conn.cursor()
+        c.execute("SELECT id, description, done FROM tasks WHERE user_id=?", (user_id,))
+        rows = c.fetchall()
+    return [
+        {"id": row[0], "description": row[1], "done": bool(row[2])} for row in rows
     ]
-    conn.close()
-    return tasks
 
 def add_task_db(user_id, desc):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("INSERT INTO tasks (user_id, description) VALUES (?, ?)", (user_id, desc))
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute(
+            "INSERT INTO tasks (user_id, description) VALUES (?, ?)", (user_id, desc)
+        )
 
 def remove_task_db(task_id):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("DELETE FROM tasks WHERE id=?", (task_id,))
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute("DELETE FROM tasks WHERE id=?", (task_id,))
 
 def mark_done_db(task_id):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("UPDATE tasks SET done=1 WHERE id=?", (task_id,))
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute("UPDATE tasks SET done=1 WHERE id=?", (task_id,))
 
 def get_user(username, password):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("SELECT id, password FROM users WHERE username=?", (username,))
-    row = c.fetchone()
-    conn.close()
+    with sqlite3.connect(DB_FILE) as conn:
+        c = conn.cursor()
+        c.execute("SELECT id, password FROM users WHERE username=?", (username,))
+        row = c.fetchone()
     if row and row[1] == hash_password(password):
         return row[0]
     return None
 
 def register_user(username, password) -> bool:
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
     try:
-        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hash_password(password)))
-        conn.commit()
+        with sqlite3.connect(DB_FILE) as conn:
+            conn.execute(
+                "INSERT INTO users (username, password) VALUES (?, ?)",
+                (username, hash_password(password)),
+            )
         return True
     except sqlite3.IntegrityError:
         return False
-    finally:
-        conn.close()
 
 
 class LoginWindow(tk.Tk):
