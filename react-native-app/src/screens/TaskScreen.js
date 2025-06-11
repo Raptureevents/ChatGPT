@@ -20,6 +20,7 @@ export default function TaskScreen({ route }) {
     loadTasks();
   };
 
+
   const toggleTask = async (task) => {
     await axios.put(`http://localhost:3001/api/tasks/${task.id}`, {
       description: task.description,
@@ -42,6 +43,7 @@ export default function TaskScreen({ route }) {
       if (data.type === 'tasks') loadTasks();
     };
     return () => es.close();
+
   }, []);
 
   return (
@@ -50,7 +52,9 @@ export default function TaskScreen({ route }) {
       <Button onPress={addTask} mode="contained" style={{ marginTop: 10 }}>
         Add
       </Button>
+
       <TaskList tasks={tasks} onToggle={toggleTask} onDelete={deleteTask} />
+
     </View>
   );
 }

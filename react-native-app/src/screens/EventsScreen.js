@@ -20,6 +20,7 @@ export default function EventsScreen({ route }) {
     loadEvents();
   };
 
+
   const deleteEvent = async (item) => {
     await axios.delete(`http://localhost:3001/api/events/${item.id}`);
     loadEvents();
@@ -33,6 +34,7 @@ export default function EventsScreen({ route }) {
       if (data.type === 'events') loadEvents();
     };
     return () => es.close();
+
   }, []);
 
   return (
@@ -42,6 +44,7 @@ export default function EventsScreen({ route }) {
         Add
       </Button>
       <ItemList items={events} onLongPressItem={deleteEvent} />
+
     </View>
   );
 }

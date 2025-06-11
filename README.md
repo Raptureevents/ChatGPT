@@ -9,6 +9,7 @@ This repository contains two versions of a task manager.
 
 Ensure you have Python installed (version 3.8+ recommended). Tkinter is typically included with standard Python installations. Run the application with:
 
+
 ```bash
 python tasks_app.py
 ```
@@ -21,4 +22,7 @@ User accounts and tasks are stored in the SQLite database `app.db` in the projec
 2. From `server/` run `npm install` then `npm start` to launch the API on port 3001.
 3. From `react-native-app/` run `npm install` and `npm start` to launch the React Native bundler.
 
+
 The React Native app now features a dashboard with sections for tasks, projects, events and expenses. Reusable components keep the interface minimalistic. The Express backend exposes CRUD endpoints for all resources and provides a `/api/stream` Server-Sent Events endpoint so the client can refresh lists when data changes.
+
+

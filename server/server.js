@@ -3,6 +3,7 @@ import cors from 'cors';
 import bcrypt from 'bcrypt';
 import { query } from './db.js';
 
+
 const clients = [];
 
 function broadcast(update) {
@@ -10,9 +11,11 @@ function broadcast(update) {
   clients.forEach((res) => res.write(data));
 }
 
+
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 
 async function init() {
   await query(`CREATE TABLE IF NOT EXISTS users (
@@ -93,6 +96,7 @@ app.get('/api/tasks', async (req, res) => {
 app.post('/api/tasks', async (req, res) => {
   const { userId, description, assigneeId } = req.body;
   await query('INSERT INTO tasks (user_id, description, assignee_id) VALUES ($1, $2, $3)', [userId, description, assigneeId]);
+
   broadcast({ type: 'tasks' });
   res.status(201).end();
 });
@@ -109,6 +113,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
   broadcast({ type: 'tasks' });
   res.end();
 });
+
 
 app.get('/api/projects', async (req, res) => {
   const { userId } = req.query;
@@ -136,6 +141,7 @@ app.delete('/api/projects/:id', async (req, res) => {
   res.end();
 });
 
+
 app.get('/api/events', async (req, res) => {
   const { userId } = req.query;
   const rows = await query('SELECT * FROM events WHERE user_id=$1', [userId]);
@@ -145,6 +151,7 @@ app.get('/api/events', async (req, res) => {
 app.post('/api/events', async (req, res) => {
   const { userId, name } = req.body;
   await query('INSERT INTO events (user_id, name) VALUES ($1, $2)', [userId, name]);
+
   broadcast({ type: 'events' });
   res.status(201).end();
 });
@@ -162,6 +169,7 @@ app.delete('/api/events/:id', async (req, res) => {
   res.end();
 });
 
+
 app.get('/api/expenses', async (req, res) => {
   const { userId } = req.query;
   const rows = await query('SELECT * FROM expenses WHERE user_id=$1', [userId]);
@@ -171,6 +179,7 @@ app.get('/api/expenses', async (req, res) => {
 app.post('/api/expenses', async (req, res) => {
   const { userId, name } = req.body;
   await query('INSERT INTO expenses (user_id, name) VALUES ($1, $2)', [userId, name]);
+
   broadcast({ type: 'expenses' });
   res.status(201).end();
 });
@@ -187,5 +196,6 @@ app.delete('/api/expenses/:id', async (req, res) => {
   broadcast({ type: 'expenses' });
   res.end();
 });
+
 
 app.listen(3001, () => console.log('Server running on port 3001'));
