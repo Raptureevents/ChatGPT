@@ -154,6 +154,7 @@ class TaskApp(tk.Tk):
             self.tasks = load_tasks(self.user_id)
             self.refresh_tasks()
 
+
     def remove_task(self):
         idx = self.task_listbox.curselection()
         if not idx:
@@ -246,6 +247,7 @@ if __name__ == '__main__':
     init_db()
     if os.environ.get('DISPLAY'):
         LoginWindow().mainloop()
+
     else:
         print("No display found. Running in console mode.")
         run_cli()

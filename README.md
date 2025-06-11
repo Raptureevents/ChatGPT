@@ -1,11 +1,13 @@
 # ChatGPT
 
+
 This repository contains two versions of a task manager.
 
 * `tasks_app.py` – a Python/Tkinter implementation that falls back to a CLI when no display is available.
 * `react-native-app` and `server` – a new full‑stack React Native Windows application backed by a Node.js/Express API with PostgreSQL.
 
 ## Running the Python Application
+
 
 Ensure you have Python installed (version 3.8+ recommended). Tkinter is typically
 included with standard Python installations. Run the application with:
@@ -19,6 +21,7 @@ directory. If no GUI display is detected, the script automatically runs in conso
 mode. After logging in you can use simple commands (`add`, `remove`, `done`,
 `quit`) to manage tasks.
 
+
 ## Running the React Native + Node Application
 
 1. Populate `server/.env` based on `server/.env.example` with your PostgreSQL connection string.
@@ -26,3 +29,4 @@ mode. After logging in you can use simple commands (`add`, `remove`, `done`,
 3. From `react-native-app/` run `npm install` and `npm start` to launch the React Native bundler.
 
 This setup works for development. Build steps for production depend on React Native Windows tooling.
+
